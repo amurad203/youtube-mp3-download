@@ -72,6 +72,8 @@ source .venv/bin/activate
 pip install -U yt-dlp
 ```
 
+The app allows yt-dlp to fetch **`ejs:github`** helper scripts when YouTube demands extra JS solving (recommended by yt-dlp; needs outbound access to GitHub).
+
 ## Legal
 
 Only download content you are allowed to use. Respect copyright and each site’s terms of service.

@@ -57,6 +57,8 @@ def build_opts(
     jr = _js_runtimes_for_youtube()
     if jr:
         opts["js_runtimes"] = jr
+    # YouTube JS challenges sometimes need scripts from yt-dlp’s EJS helpers (GitHub).
+    opts["remote_components"] = {"ejs:github"}
     return opts
 
 
