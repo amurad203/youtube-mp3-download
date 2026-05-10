@@ -15,6 +15,7 @@ Usage:
 from __future__ import annotations
 
 import argparse
+import os
 import shutil
 import sys
 from pathlib import Path
@@ -38,6 +39,7 @@ def build_opts(
     out_dir: Path,
     quality: str,
     no_playlist: bool,
+    ffmpeg_location: str | None = None,
 ) -> dict:
     opts: dict = {
         "format": "bestaudio/best",
@@ -59,6 +61,9 @@ def build_opts(
         opts["js_runtimes"] = jr
     # YouTube JS challenges sometimes need scripts from yt-dlp’s EJS helpers (GitHub).
     opts["remote_components"] = {"ejs:github"}
+    loc = (ffmpeg_location or os.environ.get("FFMPEG_LOCATION") or "").strip()
+    if loc:
+        opts["ffmpeg_location"] = loc
     return opts
 
 
@@ -69,11 +74,12 @@ def download_to_mp3(
     quality: str = "192",
     no_playlist: bool = False,
     progress_hooks: list | None = None,
+    ffmpeg_location: str | None = None,
 ) -> int:
     """Download URLs to MP3. Returns 0 on success, 1 on yt-dlp error."""
     out = out_dir or Path("youtube_mp3")
     out.mkdir(parents=True, exist_ok=True)
-    opts = build_opts(out.resolve(), quality, no_playlist)
+    opts = build_opts(out.resolve(), quality, no_playlist, ffmpeg_location=ffmpeg_location)
     if progress_hooks:
         opts["progress_hooks"] = progress_hooks
     try:
@@ -112,6 +118,15 @@ def main() -> int:
         action="store_true",
         help="If URL is a playlist, download only the single video",
     )
+    parser.add_argument(
+        "--ffmpeg-location",
+        metavar="PATH",
+        default=None,
+        help=(
+            "Path to ffmpeg executable; or set FFMPEG_LOCATION. "
+            "Use if yt-dlp only leaves .webm/.m4a (conversion failed)."
+        ),
+    )
     args = parser.parse_args()
 
     return download_to_mp3(
@@ -119,6 +134,7 @@ def main() -> int:
         out_dir=args.output_dir,
         quality=args.quality,
         no_playlist=args.no_playlist,
+        ffmpeg_location=args.ffmpeg_location,
     )
 
 

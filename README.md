@@ -13,6 +13,26 @@ Download YouTube (and other sites [yt-dlp](https://github.com/yt-dlp/yt-dlp) sup
 
 Install FFmpeg: **macOS** `brew install ffmpeg` · **Ubuntu/Debian** `sudo apt install ffmpeg` · **Windows** [ffmpeg.org](https://ffmpeg.org/download.html) (add `ffmpeg.exe` to `PATH`).
 
+Verify it works anywhere:
+
+```bash
+ffmpeg -version
+```
+
+### Friend only sees `.webm` or `.m4a`, no `.mp3`?
+
+That almost always means the **conversion step didn’t run** — usually FFmpeg is **missing** or **not on PATH** (common on Windows). YouTube’s stream is downloaded first (often WebM), then FFmpeg is supposed to produce the MP3.
+
+1. Install FFmpeg and restart the terminal — run `ffmpeg -version` until it prints a version.
+2. On Windows you can install the full “ Essentials build ” zip and add the `bin` folder to **PATH**.
+3. If FFmpeg is installed in a weird place, set the env var **`FFMPEG_LOCATION`** to the **`ffmpeg`** binary (folder or `.exe`), then run `./yt-mp3` again:
+
+   ```bash
+   export FFMPEG_LOCATION="/full/path/to/ffmpeg"   # Windows (Git Bash): FFMPEG_LOCATION="/c/path/to/ffmpeg.exe"
+   ```
+
+4. CLI only: `./yt-mp3 --ffmpeg-location /path/to/ffmpeg "URL"`
+
 ## Setup
 
 ```bash
