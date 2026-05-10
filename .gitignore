@@ -1,0 +1,5 @@
+.venv/
+youtube_mp3/
+__pycache__/
+*.py[cod]
+.DS_Store
