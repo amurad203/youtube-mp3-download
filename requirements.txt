@@ -1,2 +1,6 @@
+# Pip cannot install FFmpeg itself — install separately and ensure `ffmpeg` is on your PATH:
+#   macOS: brew install ffmpeg
+#   Ubuntu: sudo apt install ffmpeg
+# Windows: https://ffmpeg.org/download.html — add ffmpeg.exe folder to PATH
 yt-dlp>=2024.12.13
 flask>=3.0.0

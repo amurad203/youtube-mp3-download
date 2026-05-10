@@ -15,6 +15,7 @@ Usage:
 from __future__ import annotations
 
 import argparse
+import shutil
 import sys
 from pathlib import Path
 
@@ -25,12 +26,20 @@ except ImportError:
     sys.exit(1)
 
 
+def _js_runtimes_for_youtube() -> dict[str, dict] | None:
+    """YouTube often needs JS; yt-dlp defaults to Deno only — use Node/Deno when installed."""
+    for name in ("node", "deno", "bun"):
+        if shutil.which(name):
+            return {name: {}}
+    return None
+
+
 def build_opts(
     out_dir: Path,
     quality: str,
     no_playlist: bool,
 ) -> dict:
-    return {
+    opts: dict = {
         "format": "bestaudio/best",
         "outtmpl": str(out_dir / "%(title)s.%(ext)s"),
         "noplaylist": no_playlist,
@@ -45,6 +54,10 @@ def build_opts(
         "restrictfilenames": False,
         "windowsfilenames": True,
     }
+    jr = _js_runtimes_for_youtube()
+    if jr:
+        opts["js_runtimes"] = jr
+    return opts
 
 
 def download_to_mp3(
@@ -53,11 +66,14 @@ def download_to_mp3(
     out_dir: Path | None = None,
     quality: str = "192",
     no_playlist: bool = False,
+    progress_hooks: list | None = None,
 ) -> int:
     """Download URLs to MP3. Returns 0 on success, 1 on yt-dlp error."""
     out = out_dir or Path("youtube_mp3")
     out.mkdir(parents=True, exist_ok=True)
     opts = build_opts(out.resolve(), quality, no_playlist)
+    if progress_hooks:
+        opts["progress_hooks"] = progress_hooks
     try:
         with yt_dlp.YoutubeDL(opts) as ydl:
             ydl.download(urls)

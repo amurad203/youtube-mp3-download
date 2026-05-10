@@ -1,4 +1,12 @@
 #!/usr/bin/env bash
 set -euo pipefail
 DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-exec "$DIR/.venv/bin/python" "$DIR/download_mp3.py" "$@"
+PY="$DIR/.venv/bin/python"
+
+# No args → local web UI. "web" or "gui" explicitly → same.
+if [[ $# -eq 0 ]] || [[ "$1" == web ]] || [[ "$1" == gui ]]; then
+  cd "$DIR"
+  exec "$PY" "$DIR/app.py"
+fi
+
+exec "$PY" "$DIR/download_mp3.py" "$@"
